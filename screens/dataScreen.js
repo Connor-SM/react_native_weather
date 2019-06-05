@@ -10,11 +10,32 @@ export default class DataScreen extends React.Component {
       data: {
         city: '',
         country: '',
-        temp: 78,
-        humidity: 50,
-        desc: 'Cloudy',
+        temp: null,
+        humidity: null,
+        desc: '',
       }
     }
+  }
+
+  componentDidMount() {
+    let city = this.props.navigation.getParam('city', null);
+    let country = this.props.navigation.getParam('country', null);
+
+    const URL = `http://api.openweathermap.org/data/2.5/weather?q=${city},${country}&APPID=${API_KEY}&units=imperial`;
+
+    fetch(URL)
+      .then(response => response.json())
+      .then(info => {
+        console.log(info);
+
+        let data = this.state.data;
+
+        data['temp'] = info.main.temp.toFixed(0);
+        data['humidity'] = info.main.humidity;
+        data['desc'] = info.weather[0].main;
+
+        this.setState({ data });
+      });
   }
 
   static navigationOptions = {
